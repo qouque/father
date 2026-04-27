@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>아빠 환갑 서프라이즈 ATM</title>
+    <style>
+      :root {
+        --bg: #ececf1;
+        --ink: #111631;
+        --card-dark: #161f4d;
+        --card-blue: linear-gradient(140deg, #5359ff, #454af0);
+        --point-blue: #4f56ff;
+        --line: #bcbcc4;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+        color: var(--ink);
+        display: flex;
+        justify-content: center;
+      }
+
+      .stage {
+        width: min(1024px, 100vw);
+        min-height: 100vh;
+        padding: 28px 30px 36px;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      .brand-icon {
+        width: 54px;
+        height: 40px;
+        border-radius: 10px;
+        background: linear-gradient(140deg, #55ce8a, #4da6ff);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+      }
+
+      .brand-name {
+        font-size: 2.9rem;
+        font-weight: 700;
+        line-height: 1;
+        color: #1f4d8b;
+      }
+
+      .brand-sub {
+        margin-top: 2px;
+        font-size: 0.88rem;
+        color: #8f95a8;
+        letter-spacing: 0.04em;
+      }
+
+      .page {
+        display: none;
+        min-height: calc(100vh - 145px);
+      }
+
+      .page.active {
+        display: block;
+      }
+
+      .main-title {
+        margin: 38px 0 4px;
+        text-align: center;
+        font-size: clamp(2rem, 6vw, 5rem);
+        font-weight: 900;
+      }
+
+      .main-sub {
+        margin: 0;
+        text-align: center;
+        font-size: clamp(1.4rem, 2.6vw, 3rem);
+      }
+
+      .menu-cards {
+        margin-top: 54px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
+      }
+
+      .card {
+        border-radius: 46px;
+        min-height: 350px;
+        padding: 36px 32px 26px;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        border: 0;
+        text-align: left;
+        cursor: pointer;
+        box-shadow: 0 10px 18px rgba(0, 0, 0, 0.16);
+      }
+
+      .card.dark {
+        background: var(--card-dark);
+      }
+
+      .card.blue {
+        background: var(--card-blue);
+      }
+
+      .card-label {
+        font-size: clamp(1.8rem, 3vw, 2.5rem);
+        font-weight: 900;
+        line-height: 1.2;
+      }
+
+      .card-action {
+        margin-top: auto;
+        width: fit-content;
+        border-radius: 999px;
+        padding: 12px 28px;
+        border: 0;
+        background: rgba(255, 255, 255, 0.14);
+        color: #fff;
+        font-size: 1.75rem;
+        font-weight: 500;
+      }
+
+      .card-icon {
+        align-self: flex-end;
+        margin-top: 14px;
+        font-size: 4.2rem;
+      }
+
+      .auth-wrap {
+        display: grid;
+        grid-template-columns: 1.3fr 0.7fr;
+        gap: 32px;
+        align-items: center;
+        margin-top: 18px;
+      }
+
+      .auth-text {
+        font-size: clamp(2rem, 4.6vw, 5rem);
+        line-height: 1.2;
+        font-weight: 700;
+        margin: 20px 0 32px;
+      }
+
+      .auth-text strong {
+        font-weight: 900;
+      }
+
+      .pin-display {
+        width: 100%;
+        min-height: 84px;
+        border-radius: 999px;
+        border: 3px solid var(--line);
+        background: #f8f8fb;
+        font-size: 3.1rem;
+        letter-spacing: 0.2em;
+        display: flex;
+        align-items: center;
+        padding: 0 28px;
+      }
+
+      .keypad {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+
+      .key {
+        border: 3px solid var(--line);
+        border-radius: 20px;
+        min-height: 98px;
+        background: #f5f5f7;
+        font-size: 2.8rem;
+        font-weight: 700;
+        color: #161b36;
+      }
+
+      .key.confirm {
+        border: 0;
+        background: #171d41;
+        color: #fff;
+      }
+
+      .done-title {
+        margin: 50px 0 14px;
+        text-align: center;
+        font-size: clamp(2.3rem, 5vw, 5.2rem);
+        font-weight: 900;
+      }
+
+      .done-guide {
+        text-align: center;
+        font-size: clamp(1.35rem, 2.5vw, 2.5rem);
+        line-height: 1.45;
+      }
+
+      .done-guide strong {
+        font-weight: 900;
+      }
+
+      .done-banner {
+        margin: 38px auto 0;
+        border-radius: 30px;
+        background: #1b2459;
+        color: #f0f2fb;
+        width: min(860px, 100%);
+        min-height: 200px;
+        padding: 30px 34px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+      }
+
+      .done-banner-text {
+        font-size: clamp(2rem, 3.7vw, 3.9rem);
+        font-weight: 900;
+        line-height: 1.3;
+      }
+
+      .done-banner-icon {
+        font-size: 6.2rem;
+      }
+
+      .done-actions {
+        margin-top: 30px;
+        text-align: center;
+      }
+
+      .restart-btn {
+        min-width: 330px;
+        border: 0;
+        border-radius: 999px;
+        padding: 18px 28px;
+        background: var(--point-blue);
+        color: #fff;
+        font-size: 2.1rem;
+        font-weight: 700;
+      }
+
+      @media (max-width: 860px) {
+        .stage {
+          padding: 20px 16px 24px;
+        }
+
+        .brand-name {
+          font-size: 1.9rem;
+        }
+
+        .menu-cards {
+          grid-template-columns: 1fr;
+          gap: 14px;
+          margin-top: 20px;
+        }
+
+        .card {
+          min-height: 190px;
+          border-radius: 24px;
+          padding: 20px;
+        }
+
+        .card-action {
+          font-size: 1.15rem;
+          padding: 8px 16px;
+        }
+
+        .card-icon {
+          font-size: 2.2rem;
+        }
+
+        .auth-wrap {
+          grid-template-columns: 1fr;
+          gap: 18px;
+        }
+
+        .auth-text {
+          margin: 8px 0 16px;
+        }
+
+        .pin-display {
+          min-height: 68px;
+          font-size: 2.2rem;
+        }
+
+        .key {
+          min-height: 76px;
+          font-size: 2rem;
+        }
+
+        .done-banner {
+          min-height: 130px;
+          border-radius: 20px;
+          padding: 20px;
+        }
+
+        .done-banner-icon {
+          font-size: 3rem;
+        }
+
+        .restart-btn {
+          min-width: 240px;
+          font-size: 1.4rem;
+          padding: 14px 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="stage">
+      <header class="brand" aria-label="DHS Bank">
+        <div class="brand-icon" aria-hidden="true">🏦</div>
+        <div>
+          <div class="brand-name">DHS Bank</div>
+          <div class="brand-sub">YOUR TRUSTED PARTNER</div>
+        </div>
+      </header>
+
+      <section class="page active" id="page-main">
+        <h1 class="main-title">안녕하세요. DHS Bank입니다.</h1>
+        <p class="main-sub">원하는 서비스를 선택해주세요.</p>
+        <div class="menu-cards">
+          <button class="card dark" id="rejectBtn" type="button">
+            <div class="card-label">생일선물<br />거절하기</div>
+            <div class="card-action">바로가기 →</div>
+            <div class="card-icon" aria-hidden="true">🥺</div>
+          </button>
+          <button class="card blue" id="goPasswordBtn" type="button">
+            <div class="card-label">생일선물<br />셀프수령하기</div>
+            <div class="card-action">바로가기 →</div>
+            <div class="card-icon" aria-hidden="true">🎁</div>
+          </button>
+        </div>
+      </section>
+
+      <section class="page" id="page-password">
+        <div class="auth-wrap">
+          <div>
+            <p class="auth-text">본인확인을 위해<br /><strong>생년월일 6자리</strong>를<br />정확히 입력해주세요.</p>
+            <div class="pin-display" id="pinDisplay"></div>
+          </div>
+          <div class="keypad" id="keypad">
+            <button class="key" data-digit="1" type="button">1</button>
+            <button class="key" data-digit="2" type="button">2</button>
+            <button class="key" data-digit="3" type="button">3</button>
+            <button class="key" data-digit="4" type="button">4</button>
+            <button class="key" data-digit="5" type="button">5</button>
+            <button class="key" data-digit="6" type="button">6</button>
+            <button class="key" data-digit="7" type="button">7</button>
+            <button class="key" data-digit="8" type="button">8</button>
+            <button class="key" data-digit="9" type="button">9</button>
+            <button class="key" id="clearBtn" type="button">정정</button>
+            <button class="key" data-digit="0" type="button">0</button>
+            <button class="key confirm" id="confirmBtn" type="button">확인</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="page-done">
+        <h2 class="done-title">본인확인이 완료되었습니다.</h2>
+        <p class="done-guide">지금 생일 선물을 출금하시려면<br /><strong>카드 투입구</strong>에 카드를 넣어주세요.</p>
+        <div class="done-banner">
+          <div class="done-banner-text">생일카드를<br />카드 투입구에 넣어주세요.</div>
+          <div class="done-banner-icon" aria-hidden="true">📣</div>
+        </div>
+        <div class="done-actions">
+          <button class="restart-btn" id="restartBtn" type="button">처음으로 →</button>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const pages = {
+        main: document.getElementById("page-main"),
+        password: document.getElementById("page-password"),
+        done: document.getElementById("page-done"),
+      };
+
+      const rejectBtn = document.getElementById("rejectBtn");
+      const goPasswordBtn = document.getElementById("goPasswordBtn");
+      const clearBtn = document.getElementById("clearBtn");
+      const confirmBtn = document.getElementById("confirmBtn");
+      const restartBtn = document.getElementById("restartBtn");
+      const keypad = document.getElementById("keypad");
+      const pinDisplay = document.getElementById("pinDisplay");
+
+      let pin = "";
+
+      function showPage(pageName) {
+        Object.values(pages).forEach((page) => page.classList.remove("active"));
+        pages[pageName].classList.add("active");
+      }
+
+      function renderPin() {
+        pinDisplay.textContent = pin.length ? Array(pin.length).fill("*").join("  ") : "";
+      }
+
+      function resetPin() {
+        pin = "";
+        renderPin();
+      }
+
+      rejectBtn.addEventListener("click", () => {
+        const isReject = window.confirm("정말로 거절하시겠습니까?");
+        if (isReject) {
+          window.alert("거절이 접수되었습니다.");
+        }
+      });
+
+      goPasswordBtn.addEventListener("click", () => {
+        resetPin();
+        showPage("password");
+      });
+
+      keypad.addEventListener("click", (event) => {
+        const button = event.target.closest("button");
+        if (!button || !button.dataset.digit) {
+          return;
+        }
+
+        if (pin.length < 6) {
+          pin += button.dataset.digit;
+          renderPin();
+        }
+      });
+
+      clearBtn.addEventListener("click", () => {
+        pin = pin.slice(0, -1);
+        renderPin();
+      });
+
+      confirmBtn.addEventListener("click", () => {
+        if (pin.length !== 6) {
+          window.alert("생년월일 6자리를 입력해 주세요.");
+          return;
+        }
+        showPage("done");
+      });
+
+      restartBtn.addEventListener("click", () => {
+        resetPin();
+        showPage("main");
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (!pages.password.classList.contains("active")) {
+          return;
+        }
+
+        if (/^\d$/.test(event.key) && pin.length < 6) {
+          pin += event.key;
+          renderPin();
+        } else if (event.key === "Backspace") {
+          pin = pin.slice(0, -1);
+          renderPin();
+        } else if (event.key === "Enter") {
+          confirmBtn.click();
+        }
+      });
+
+      renderPin();
+    </script>
+  </body>
+</html>
