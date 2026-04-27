@@ -119,6 +119,7 @@
         box-shadow: 0 10px 18px rgba(0, 0, 0, 0.16);
         -webkit-tap-highlight-color: transparent;
         touch-action: manipulation;
+        user-select: none;
       }
 
       .card.dark {
@@ -201,6 +202,7 @@
         color: #161b36;
         -webkit-tap-highlight-color: transparent;
         touch-action: manipulation;
+        user-select: none;
       }
 
       .key.confirm {
@@ -266,6 +268,7 @@
         font-weight: 700;
         -webkit-tap-highlight-color: transparent;
         touch-action: manipulation;
+        user-select: none;
       }
 
       @media (orientation: portrait) {
@@ -421,6 +424,24 @@
       const pinDisplay = document.getElementById("pinDisplay");
 
       let pin = "";
+      let lastFastTapAt = 0;
+
+      function bindFastTap(element, handler) {
+        element.addEventListener("pointerup", (event) => {
+          event.preventDefault();
+          lastFastTapAt = Date.now();
+          handler(event);
+        });
+
+        // Pointerup 직후 발생하는 click 중복 실행 방지
+        element.addEventListener("click", (event) => {
+          if (Date.now() - lastFastTapAt < 360) {
+            event.preventDefault();
+            return;
+          }
+          handler(event);
+        });
+      }
 
       function showPage(pageName) {
         Object.values(pages).forEach((page) => page.classList.remove("active"));
@@ -436,19 +457,19 @@
         renderPin();
       }
 
-      rejectBtn.addEventListener("click", () => {
+      bindFastTap(rejectBtn, () => {
         const isReject = window.confirm("정말로 거절하시겠습니까?");
         if (isReject) {
           window.alert("거절이 접수되었습니다.");
         }
       });
 
-      goPasswordBtn.addEventListener("click", () => {
+      bindFastTap(goPasswordBtn, () => {
         resetPin();
         showPage("password");
       });
 
-      keypad.addEventListener("click", (event) => {
+      function onKeypadPress(event) {
         const button = event.target.closest("button");
         if (!button || !button.dataset.digit) {
           return;
@@ -458,14 +479,15 @@
           pin += button.dataset.digit;
           renderPin();
         }
-      });
+      }
+      bindFastTap(keypad, onKeypadPress);
 
-      clearBtn.addEventListener("click", () => {
+      bindFastTap(clearBtn, () => {
         pin = pin.slice(0, -1);
         renderPin();
       });
 
-      confirmBtn.addEventListener("click", () => {
+      bindFastTap(confirmBtn, () => {
         if (pin.length !== 6) {
           window.alert("생년월일 6자리를 입력해 주세요.");
           return;
@@ -473,7 +495,7 @@
         showPage("done");
       });
 
-      restartBtn.addEventListener("click", () => {
+      bindFastTap(restartBtn, () => {
         resetPin();
         showPage("main");
       });
@@ -493,28 +515,6 @@
           confirmBtn.click();
         }
       });
-
-      // iPad Safari double-tap zoom/click 현상 방지
-      let lastTouchEnd = 0;
-      document.addEventListener(
-        "touchend",
-        (event) => {
-          const now = Date.now();
-          if (now - lastTouchEnd < 320) {
-            event.preventDefault();
-          }
-          lastTouchEnd = now;
-        },
-        { passive: false }
-      );
-
-      document.addEventListener(
-        "dblclick",
-        (event) => {
-          event.preventDefault();
-        },
-        { passive: false }
-      );
 
       renderPin();
     </script>
